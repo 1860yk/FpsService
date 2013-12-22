@@ -7,61 +7,52 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.widget.TextView;
 
+/**
+ * FpsView shows the instant fps to the screen
+ * 
+ * @author yuankai02@baidu.com
+ * @version 1.0
+ * @date 2013-12-22
+ */
 public class FpsView extends TextView {
     /**
-     * 换算为运行周期
-     * 单位: ns(纳秒)
+     * 200ms calcute period (ns)
      */
     public static final long PERIOD = (long) (1000000000L / 5); 
+    
     /**
-     * FPS最大间隔时间，换算为1s = 10^9ns 
-     * 单位: ns
+     * 1 seconds (ns)
      */
     public static long FPS_MAX_INTERVAL = 1000000000L; 
     
-    /**
-     * 实际的FPS数值
-     */
     private double mNowFPS = 0.0;
     private double mMaxFps = 0.0;
     private double mMinFps = Double.MAX_VALUE;
     private double mAvgFps = 0.0;
     private FpsUpdateListener mListener = null;
     
-    /**
-     * 此level代表画面静止时的最低FPS，不计入平均数
-     */
-    private final static int ACTIVE_LIMIT = 60;
-    
-    /**
-     * FPS累计用间距时间
-     * in ns
-     */
-    private long interval = 0L;
-    
+    private long mInterval = 0L;
     private long mLastTime = 0L;
-    
-    private long time = -1;
-    /**
-     * 运行桢累计 
-     */
-    private long frameCount = 0;
-    
+    private long mTime = -1;
+    private long mFrameCount = 0;
     private long mCaculateTimes = 0;
+    private DecimalFormat mDecimalFormat = new DecimalFormat("0.0"); 
     
+    /**
+     * fps update listener 
+     * 
+     * @author yuankai02@baidu.com
+     * @version 1.0
+     * @date 2013-12-22
+     */
     public interface FpsUpdateListener
     {
         /**
-         * fps更新回调
+         * fps update callback
          * @param fps
          */
         public void onUpdateFps(double fps, long frameCount, long duration);
     }
-    
-    /**
-     * 格式化小数位数 
-     */
-    private DecimalFormat df = new DecimalFormat("0.0"); 
 	
 	public FpsView(Context context) {
 		super(context);
@@ -75,31 +66,28 @@ public class FpsView extends TextView {
 	    if(mLastTime == 0)
 	    {
 	        mLastTime = System.nanoTime();
-	        time = System.nanoTime();
+	        mTime = System.nanoTime();
 	    }
 		super.draw(canvas);
 		
 		long timeNow = System.nanoTime();
-		frameCount++;
-        interval += timeNow - mLastTime;
+		mFrameCount++;
+        mInterval += timeNow - mLastTime;
         mLastTime = timeNow;
-//		interval += PERIOD;
-        //当实际间隔符合时间时。
-        if (interval >= /*FPS_MAX_INTERVAL*/PERIOD)
+        if (mInterval >= PERIOD)
         {
-            //nanoTime()返回最准确的可用系统计时器的当前值，以毫微秒为单位
-            // 获得到目前为止的时间距离
-            long realTime = timeNow - time /*- (interval - PERIOD)*/; // 单位: ns
-            //换算为实际的fps数值
-            mNowFPS = ((double) frameCount / realTime) * FPS_MAX_INTERVAL;
+            // nanoTime()
+            long realTime = timeNow - mTime /*- (interval - PERIOD)*/; // 单位: ns
+            // caculate to real fps 
+            mNowFPS = ((double) mFrameCount / realTime) * FPS_MAX_INTERVAL;
             
-            // 显示
-            updateFps(frameCount, realTime);
+            // show
+            updateFps(mFrameCount, realTime);
             
-            //变更数值
-            frameCount = 0L;
-            interval = 0;
-            time = timeNow;
+            // reset
+            mFrameCount = 0L;
+            mInterval = 0;
+            mTime = timeNow;
         }
 	}
 	
@@ -127,10 +115,10 @@ public class FpsView extends TextView {
 	    mAvgFps = (double)(mAvgFps * mCaculateTimes + mNowFPS) / (mCaculateTimes + 1);
 	    mCaculateTimes ++;
 	    
-        setText("FPS: " + df.format(mNowFPS) + "\n" + 
-                "AVG: " + df.format(mAvgFps) + "\n" +
-                "MAX: " + df.format(mMaxFps) + "\n" + 
-                "MIN: " + df.format(mMinFps) + 
+        setText("FPS: " + mDecimalFormat.format(mNowFPS) + "\n" + 
+                "AVG: " + mDecimalFormat.format(mAvgFps) + "\n" +
+                "MAX: " + mDecimalFormat.format(mMaxFps) + "\n" + 
+                "MIN: " + mDecimalFormat.format(mMinFps) + 
                 "");
 	}
 }

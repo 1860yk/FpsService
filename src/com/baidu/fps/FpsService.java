@@ -30,8 +30,7 @@ import android.widget.RelativeLayout.LayoutParams;
 import android.widget.Toast;
 
 /**
- * FpsService
- * show and save fps details for app.
+ * FpsService shows fps details at left/top corner, and save the fps file to /mnt/sdcard/fps/yyyyMMdd_HH_mm_ss.fps
  * 
  * @author yuankai02@baidu.com
  * @version 1.0
@@ -171,7 +170,7 @@ public class FpsService extends Service implements OnClickListener, FpsView.FpsU
     /**
      * every record
      * 
-     * @author yuankai02
+     * @author yuankai02@baidu.com
      * @version 1.0
      * @date 2013-12-14
      */
@@ -191,7 +190,7 @@ public class FpsService extends Service implements OnClickListener, FpsView.FpsU
     /**
      * record worker thread
      * 
-     * @author yuankai02
+     * @author yuankai02@baidu.com
      * @version 1.0
      * @date 2013-12-13
      */
@@ -217,11 +216,11 @@ public class FpsService extends Service implements OnClickListener, FpsView.FpsU
                 }
                 catch (InterruptedException e)
                 {
-                    // TODO Auto-generated catch block
+                    
                     continue;
                 }
                 
-                // 进行写文件
+                // write file
                 StringBuilder sb = new StringBuilder();
                 long totalFps = 0l;
                 long totalFrameCount = 0l;
@@ -283,7 +282,7 @@ public class FpsService extends Service implements OnClickListener, FpsView.FpsU
                         }
                         catch (IOException e)
                         {
-                            // TODO Auto-generated catch block
+                            
                             e.printStackTrace();
                         }
                     }
